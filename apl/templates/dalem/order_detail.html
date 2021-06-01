@@ -1,0 +1,124 @@
+{% extends 'dalem/base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block custom_style %}
+<!-- ico font -->
+<link rel="stylesheet" type="text/css" href="{% static 'dalem/icon/icofont/css/icofont.css' %}">
+<link href="{% static 'dalem/css/jquery-ui.css' %}" rel="stylesheet">
+{% endblock custom_style %}
+
+{% block content %}
+
+<div class="row">
+	<div class="col-sm-12">
+		<!-- Material tab card start -->
+		<div class="card">
+			<div class="card-header">
+				<h5>Detail Orderan</h5>
+			</div>
+			<div class="card-block">
+				<!-- Row start -->
+				<div class="row m-b-30">
+					<div class="col-lg-12 col-xl-6">
+						<!-- Nav tabs -->
+						<ul class="nav nav-tabs md-tabs" role="tablist">
+							<li class="nav-item">
+								<a class="nav-link active" data-toggle="tab" href="#home3" role="tab">Kasus</a>
+								<div class="slide"></div>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" data-toggle="tab" href="#profile3" role="tab">Pelanggan</a>
+								<div class="slide"></div>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" data-toggle="tab" href="#messages3" role="tab">Rincian</a>
+								<div class="slide"></div>
+							</li>
+						</ul>
+						<!-- Tab panes -->
+						<div class="tab-content card-block">
+							<div class="tab-pane active" id="home3" role="tabpanel">
+								<h5>Tanggal Masuk</h3>
+								<p class="m-0">{{ instance.tgl_masuk }}</p>
+								<hr />
+								<h5>Tanggal Keluar</h3>
+								<p class="m-0">{{ instance.tgl_keluar }}</p>
+								<hr />
+								<h5>Status</h3>
+								<p class="m-0">{{ instance.get_status_display }}</p>
+								<hr />
+								<h5>Keluhan</h3>
+								<p class="m-0">{{ instance.keluhan }}</p>
+								<hr />
+								<h5>Penanganan</h3>
+								<p class="m-0">{{ instance.penanganan }}</p>
+								<hr />
+								<h5>Total Biaya</h3>
+								<p class="m-0">Rp. {{ instance.biaya_total|intcomma }}</p>
+								<hr />
+							</div>
+							<div class="tab-pane" id="profile3" role="tabpanel">
+								<h5>Nama Pelanggan</h3>
+								<p class="m-0">{{ instance.pelanggan }}</p>
+								<hr />
+								<h5>Alamat</h3>
+								<p class="m-0">{{ instance.alamat }}</p>
+								<hr />
+								<h5>Kontak</h3>
+								<p class="m-0">{{ instance.telp }}</p>
+								<hr />
+							</div>
+							<div class="tab-pane" id="messages3" role="tabpanel">
+								<h5>Gambar</h3>
+									{% for i in instance.gambar_orderan.all %}
+									<a href="{{ i.gambar.url }}" target="_blank">
+										<img src="{{ i.gambar.url }}" id="imageresource" class="img-thumbnail" alt="...">
+									</a>
+									{% endfor %}
+								<hr /><br />
+								<h5>Rincian Biaya</h5>
+								<div class="table-responsive">
+									<table class="table">
+										<thead>
+											<tr>
+												<th>#</th>
+												<th>Deskripsi</th>
+												<th>Biaya</th>
+											</tr>
+										</thead>
+										<tbody>
+								{% for i in instance.rincian_orderan.all %}
+											<tr>
+												<td>{{ forloop.counter }}</td>
+												<td>{{ i.ket }}</td>
+												<td>Rp. {{ i.biaya|intcomma }}</td>
+											</tr>
+								{% endfor %}
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- Row end -->
+			</div>
+		</div>
+		<!-- Material tab card end -->
+	</div>
+</div>
+
+{% endblock content %}
+
+{% block custom_js %}
+<!-- slimscroll js -->
+<script src="{% static 'dalem/js/jquery.mCustomScrollbar.concat.min.js' %}"></script>
+
+<!-- menu js -->
+<script src="{% static 'dalem/js/pcoded.min.js' %}"></script>
+<script src="{% static 'dalem/js/vertical/vertical-layout.min.js' %}"></script>
+
+<script type="text/javascript" src="{% static 'dalem/js/script.js' %}"></script>
+
+{% endblock custom_js %}

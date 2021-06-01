@@ -1,0 +1,425 @@
+{% extends 'dalem/base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block custom_style %}
+<!-- ico font -->
+<link rel="stylesheet" type="text/css" href="{% static 'dalem/icon/icofont/css/icofont.css' %}">
+<link href="{% static 'dalem/css/jquery-ui.css' %}" rel="stylesheet">
+{% endblock custom_style %}
+
+{% block content %}
+<div class="row">
+	<div class="col-sm-12">
+		{% if not query %}
+		<div class="card">
+			<div class="card-header">
+				<h5>{% if instance %}Update{% else %}Tambah{% endif %} Order</h5>
+				<div class="card-header-right">
+					<ul class="list-unstyled card-option">
+						<li>
+							<i class="fa fa fa-wrench open-card-option"></i>
+						</li>
+						<li>
+							<i class="fa fa-window-maximize full-card"></i>
+						</li>
+						<li>
+							<i class="fa fa-minus minimize-card"></i>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="card-block">
+
+				<!-- 
+				<a href="#" class="pop">
+				<img src="{% static 'dalem/images/avatar-4.jpg' %}" id="imageresource" class="img-thumbnail" alt="...">
+				</a>
+				<a href="#" class="pop">
+				<img src="{% static 'dalem/images/avatar-5.jpg' %}" id="imageresource" class="img-thumbnail" alt="...">
+				</a> -->
+
+
+
+
+            	<form class="form-material" method="POST" enctype="multipart/form-data">{% csrf_token %}
+            		{% if instance %}
+            		<input type="hidden" name="aksi" value="update">
+            		<div class="form-group form-primary form-static-label">
+						<textarea class="form-control" name="keluhan" required>{{ instance.keluhan }}</textarea>
+						<span class="form-bar"></span>
+						<label class="float-label">Keluhan</label>
+					</div>
+					<div class="form-group form-primary form-static-label">
+						<textarea class="form-control" name="penanganan">{{ instance.penanganan }}</textarea>
+						<span class="form-bar"></span>
+						<label class="float-label">Solusi</label>
+					</div>
+					<div class="form-group form-primary form-static-label">
+						<input type="text" name="pelanggan" class="form-control" value="{{ instance.pelanggan }}" required>
+						<span class="form-bar"></span>
+						<label class="float-label">Pelanggan</label>
+					</div>
+					<div class="form-group form-primary form-static-label">
+						<textarea class="form-control" name="alamat" required>{{ instance.alamat }}</textarea>
+						<span class="form-bar"></span>
+						<label class="float-label">Alamat</label>
+					</div>
+					<div class="form-group form-primary form-static-label">
+						<input type="text" name="telp" class="form-control" value="{{ instance.telp }}" required>
+						<span class="form-bar"></span>
+						<label class="float-label">Kontak</label>
+					</div>
+					<div class="form-group form-primary form-static-label">
+						<select name="status" id="" class="form-control">
+							<option value="1" {% if instance.status == '1' %}selected{% endif %}>Tertunda</option>
+							<option value="2" {% if instance.status == '2' %}selected{% endif %}>Dikerjakan</option>
+							<option value="3" {% if instance.status == '3' %}selected{% endif %}>Selesai</option>
+						</select>
+						<span class="form-bar"></span>
+						<label class="float-label">Status</label>
+					</div>
+					<div class="form-group form-primary form-static-label">
+						<input type="text" name="tgl_keluar" class="form-control" id="datepicker" {% if instance.tgl_keluar %}value={{ instance.tgl_keluar|date:'SHORT_DATE_FORMAT' }}{% endif %}>
+						<span class="form-bar"></span>
+						<label class="float-label">Tanggal Selesai</label>
+					</div>
+
+					
+					<div id="GambarOrderan"> 
+						{% for i in instance.gambar_orderan.all %}
+						<div class="form-row">
+							<div class="col-sm-3"></div>
+							<div class="col-sm-6">
+								<a href="{{ i.gambar.url }}" target="blank_">
+									<img src="{{ i.gambar.url }}" id="imageresource" class="img-thumbnail" alt="..." style="max-width: 50%;">
+								</a>
+								<input type="hidden" name="gambar_old" value="{{ i.pk }}">
+							</div>
+							<div class="col-sm-3">
+								<a href="#" class="removeGambar"><button class="btn btn-sm"><i class="fa fa-minus"></i></button></a>
+							</div>
+						</div>
+						<br />
+					{% endfor %}
+					</div>
+					<div class="form-group form-primary">
+                        <label class="col-sm-2 col-form-label">Upload File</label>
+						<div class="col-sm-12">
+							<input type="file" class="form-control" name='gambar' multiple="multiple">
+						</div>
+					</div>
+
+
+					{% if instance.rincian_orderan.all %}
+					<div id="RincianBiaya">
+						{% for i in instance.rincian_orderan.all %}
+						{% if forloop.counter == 1 %}
+						<div>
+	                        <div class="form-row">
+	                          <div class="form-group col-sm-6">
+	                            	<label for="ketRincian">Rincian</label>
+	                            	<input type="text" class="form-control" id="ketRincian1" placeholder="Keterangan" name="ketRincian" value="{{ i.ket }}" required>
+	                        	</div>
+		                        <div class="form-group col-sm-4">
+		                            <label for="biayaRincian">Biaya</label>
+		                            <input type="text" class="form-control" id="biayaRincian1" placeholder="Rp." name="biayaRincian" value="{{ i.biaya }}" required>
+		                        </div>
+								<div class="form-group col-sm-2">
+									<a href="#" id="addAnggotaP"><button class="btn btn-sm" style="margin-top: 25px; margin-left: 25px;"><i class="fa fa-plus"></i></button></a>
+		                        </div>
+		                        <!-- <input type="hidden" name="pkRincOld" value="{{ i.pk }}"> -->
+	                        </div>
+                      	</div>
+                      	{% else %}
+                      	<div>
+							<div class="form-row">
+								<div class="form-group col-sm-6">
+									<label for="ketRincian">Rincian</label>
+									<input type="text" class="form-control" id="ketRincian" placeholder="Keterangan" name="ketRincOld" value="{{ i.ket }}">
+								</div>
+								<div class="form-group col-sm-4">
+									<label for="biayaRincian">Biaya</label>
+									<input type="text" class="form-control" id="biayaRincian" placeholder="Rp." name="biayaRincOld" value="{{ i.biaya }}">
+								</div>
+								<div class="form-group col-sm-2">
+									<a href="#" class="removeRincian"><button class="btn btn-sm" style="margin-top: 25px; margin-left: 25px;"><i class="fa fa-minus"></i></button></a>
+		                        </div>
+								<input type="hidden" name="pkRincOld" value="{{ i.pk }}">
+							</div>
+						</div>
+                      	{% endif %}
+                      	{% endfor %}
+					</div>
+					{% else %}
+					<div id="RincianBiaya">
+						<div>
+	                        <div class="form-row">
+	                          <div class="form-group col-sm-6">
+	                            	<label for="ketRincian">Rincian</label>
+	                            	<input type="text" class="form-control" id="ketRincian1" placeholder="Keterangan" name="ketRincian">
+	                        	</div>
+		                        <div class="form-group col-sm-4">
+		                            <label for="biayaRincian">Biaya</label>
+		                            <input type="text" class="form-control" id="biayaRincian1" placeholder="Rp." name="biayaRincian">
+		                        </div>
+								<div class="form-group col-sm-2">
+									<a href="#" id="addAnggotaP"><button class="btn btn-sm" style="margin-top: 25px; margin-left: 25px;"><i class="fa fa-plus"></i></button></a>
+		                        </div>
+	                        </div>
+                      	</div>
+
+						<!-- <div class="col-12 col-md-9"><a href="#" id="addAnggotaP"><i class="fa fa-plus"></i></a></div> -->
+					</div>
+					{% endif %}
+
+					<div class="form-group">
+						<button class="btn waves-effect waves-light btn-warning btn-outline-warning" type="submit">Update</button>
+					</div>
+            		{% else %}
+            		<input type="hidden" name="aksi" value="tambah">
+            		<div class="form-group form-primary">
+						<textarea class="form-control" name="keluhan" required></textarea>
+						<span class="form-bar"></span>
+						<label class="float-label">Keluhan</label>
+					</div>
+					<div class="form-group form-primary">
+						<textarea class="form-control" name="penanganan"></textarea>
+						<span class="form-bar"></span>
+						<label class="float-label">Solusi</label>
+					</div>
+					<div class="form-group form-primary">
+						<input type="text" name="pelanggan" class="form-control" required>
+						<span class="form-bar"></span>
+						<label class="float-label">Pelanggan</label>
+					</div>
+					<div class="form-group form-primary">
+						<textarea class="form-control" name="alamat" required></textarea>
+						<span class="form-bar"></span>
+						<label class="float-label">Alamat</label>
+					</div>
+					<div class="form-group form-primary">
+						<input type="text" name="telp" class="form-control" required>
+						<span class="form-bar"></span>
+						<label class="float-label">Kontak</label>
+					</div>
+					<div class="form-group form-primary">
+                        <label class="col-sm-2 col-form-label">Upload File</label>
+						<div class="col-sm-12">
+							<input type="file" class="form-control" name='gambar' multiple="multiple">
+						</div>
+					</div>
+					<div class="form-group">
+						<button class="btn waves-effect waves-light btn-primary btn-outline-primary" type="submit">Submit</button>
+					</div>
+					{% endif %}
+                </form>
+			</div>
+		</div>
+		{% endif %}
+
+		{% if data %}
+		<div class="card">
+			<div class="card-header">
+				<h5>Daftar Orderan</h5>
+				<!-- <span>For Make row Contextual add Contextual class like <code>.table-success</code> in <code> tr tag</code> and For cell add Contextual class in <code> td or th tag</code> . </span> -->
+				<div class="card-header-right">
+					<ul class="list-unstyled card-option">
+						<li><i class="fa fa fa-wrench open-card-option"></i></li>
+						<li><i class="fa fa-window-maximize full-card"></i></li>
+						<li><i class="fa fa-minus minimize-card"></i></li>
+					</ul>
+				</div>
+			</div>
+			<div class="card-block table-border-style">
+				<div class="table-responsive">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>Keluhan</th>
+								<th>Pelanggan</th>
+								<th>Opsi</th>
+							</tr>
+						</thead>
+						<tbody>
+							<!-- <tr> == normal, <tr class="table-warning"> == proses, <tr class="table-info"> == finish -->
+							{% for i in data %}
+							<tr {% if i.data == '2' %}class="table-warning"{% elif i.data == '3' %}class="table-info"{% endif %}>
+								<th scope="row"><a href="{% url 'serpis:orderan_detail' pk=i.pk %}" target="blank_">{{ forloop.counter0|add:data.start_index }}</a></th>
+								<td>{{ i.keluhan }}</td>
+								<td>{{ i.pelanggan }}</td>
+								<td>
+									<!-- <a href="{% url 'serpis:orderan_edit' pk=i.pk %}" class="btn btn-sm waves-effect waves-light btn-warning btn-outline-warning" role="button" aria-pressed="true"><i class="icofont icofont-warning-alt"></i>Edit</a> -->
+									<button class="btn btn-sm waves-effect waves-light btn-warning btn-outline-warning"><a href="{% url 'serpis:orderan_edit' pk=i.pk %}"><i class="icofont icofont-warning-alt"></i>Edit</a></button>
+									<button class="btn btn-sm waves-effect waves-light btn-danger btn-outline-danger" type="button" data-target="#look{{ i.pk }}" data-toggle="modal"><i class="fa fa-trash"></i>Hapus</button>
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		{% endif %}
+	</div>
+</div>
+
+<!-- numbering pages -->
+{% if data %}
+<div class="row">
+	<div class="col-md-2"></div>
+		<div class="col-md-8">
+			<ul class="pagination justify-content-center">
+				{% if data.has_previous %}
+				<li class="page-item"><a href="?page=1" class="page-link">&laquo;</a></li>
+				<li class="page-item"><a href="?page={{ data.previous_page_number }}" class="page-link"><</a></li>
+				{% else %}
+				<li class="page-item disabled"><a href="#" class="page-link">&laquo;</a></li>
+				{% endif %}
+				{% for i in data.paginator.page_range %}
+				{% if data.number == i %}
+				<li class="page-item active"><a href="" class="page-link">{{ i }}</a></li>
+				{% elif i > data.number|add:'-5' and i < data.number|add:'5' %} 
+				<li class="page-item"><a href="?page={{ i }}" class="page-link">{{ i }}</a></li>
+				{% endif %}
+				{% endfor %}
+				{% if data.has_next %}
+				<li class="page-item"><a href="?page={{ data.next_page_number }}" class="page-link">></a></li>
+				<li class="page-item"><a href="?page={{ data.paginator.num_pages }}" class="page-link">&raquo;</a></li>
+				{% else %}
+				<li class="page-item disabled"><a href="#" class="page-link">&raquo;</a></li>
+				{% endif %}
+			</ul>
+		</div>
+	<div class="col-md-2"></div>
+</div>
+{% endif %}
+
+
+
+<!-- modal -->
+{% for i in data %}
+<div class="modal fade" id="look{{ i.pk }}" tabindex="-1" role="dialog" aria-labelledby="mediumModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="mediumModalLabel">Hapus Data</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                	<p>Ciyusan Hapus nih??</p>
+                	<form action="" method="POST">{% csrf_token %}
+                		<input type="hidden" name="aksi" value="hapus">
+                		<input type="hidden" name="pk_order" value="{{ i.pk }}">
+                		<div class="modal-footer">
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </div>
+                	</form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+
+
+<!-- gambar modal -->
+<!-- <div class="modal fade" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">              
+      <div class="modal-body">
+      	<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <img src="" class="imagepreview" style="width: 100%;" >
+      </div>
+    </div>
+  </div>
+</div> -->
+
+
+{% endblock content %}
+
+{% block custom_js %}
+<!-- slimscroll js -->
+<script src="{% static 'dalem/js/jquery.mCustomScrollbar.concat.min.js' %}"></script>
+
+<!-- menu js -->
+<script src="{% static 'dalem/js/pcoded.min.js' %}"></script>
+<script src="{% static 'dalem/js/vertical/vertical-layout.min.js' %}"></script>
+
+<script type="text/javascript" src="{% static 'dalem/js/script.js' %}"></script>
+
+<script>
+	// datepicker
+	$( function() {
+    	$( "#datepicker" ).datepicker();
+        $( "#datepicker" ).datepicker("option", "dateFormat", "d MM yy");
+    } );
+
+
+	// modal image detail
+	$('.pop').on('click', function() {
+		$('.imagepreview').attr('src', $(this).find('img').attr('src'));
+		$('#imagemodal').modal('show');   
+	});
+
+	var wrapGambar = $('#GambarOrderan');
+	$(wrapGambar).on("click", '.removeGambar', function(e){
+		e.preventDefault();
+		$(this).parent('div').parent('div').remove();
+	});
+
+	var wrapRincian = $('#RincianBiaya');
+	var add_button = $('#addAnggotaP');
+
+	$(wrapRincian).on("click", '.removeRincian', function(e){
+		e.preventDefault();
+		$(this).parent('div').parent('div').remove();
+	})
+
+	$(add_button).click(function(e){
+		e.preventDefault();
+		$(wrapRincian).append(`
+			<div>
+				<div class="form-row">
+					<div class="form-group col-sm-6">
+						<label for="ketRincian">Rincian</label>
+						<input type="text" class="form-control" id="ketRincian" placeholder="Keterangan" name="ketRincian" required>
+					</div>
+					<div class="form-group col-sm-4">
+						<label for="biayaRincian">Biaya</label>
+						<input type="text" class="form-control" id="biayaRincian" placeholder="Rp." name="biayaRincian" required>
+					</div>
+					<div class="form-group col-sm-2">
+						<a href="#" class="removeRincian"><button class="btn btn-sm" style="margin-top: 25px; margin-left: 25px;"><i class="fa fa-minus"></i></button></a>
+		            </div>
+				</div>
+			</div>
+		`)
+	});
+
+	$("#ketRincian1").on("keyup change", function(e) {
+		var cek = e.target.value;
+		if (cek == '') {
+			$(this).prop('required', false);
+		} else {
+			$(this).prop('required', true);
+		}
+    	console.log(e.target.value);
+	})
+
+	$("#biayaRincian1").on("keyup change", function(e) {
+		var cek = e.target.value;
+		if (cek == '') {
+			$(this).prop('required', false);
+		} else {
+			$(this).prop('required', true);
+		}
+    	console.log(e.target.value);
+	})
+</script>
+{% endblock custom_js %}
